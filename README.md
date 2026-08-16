@@ -1,6 +1,6 @@
 # S-Make
 
-S-Make is a custom CMake Module that provides a set of utility functions to decrease the severity of your CMake PTSD by approximately 50%. All functions and variables are prefixed with `S_` to avoid conflicts with other CMake code.
+S-Make is a custom CMake Module that provides a set of utility functions to decrease the severity of your CMake PTSD by approximately 50%. It also helps you build cross-platform applications. All functions and variables are prefixed with `S_` to avoid conflicts with other CMake code.
 
 ---
 
@@ -36,7 +36,7 @@ add_subdirectory(lib/S_Make)
 **Parameters:**
 
 - `<PROJECT_NAME>`: The target project name.
-- `<OPTION>`: `ON` or `OFF` to enable or disable generation.
+- `<OPTION>`: `ON` to statically link the runtime, `OFF` for dynamic linkage.
 
 **Outputs (global variables):**
 
@@ -51,7 +51,7 @@ S_generate_runtime_linkage_options(MyProject OFF)
 
 ---
 
-### `S_generate_vcpkg_triplet(<OUTPUT_VAR> <PROJECT_NAME> LINK_TYPE <static|shared> MSVC_RUNTIME_LINKAGE <VALUE>)`
+### `S_generate_vcpkg_triplet(<OUTPUT_VAR> <PROJECT_NAME> LINK_TYPE <static|dynamic> MSVC_RUNTIME_LINKAGE <VALUE>)`
 
 **Purpose:** Generates a Vcpkg triplet for the current project and build environment.
 
@@ -59,8 +59,8 @@ S_generate_runtime_linkage_options(MyProject OFF)
 
 - `<OUTPUT_VAR>`: Variable to store the generated triplet.
 - `<PROJECT_NAME>`: Name of the project.
-- `LINK_TYPE`: `static` or `shared` linking.
-- `MSVC_RUNTIME_LINKAGE`: Use the previously generated `S_MSVC_RUNTIME_LINKAGE`.
+- `LINK_TYPE`: `static` or `dynamic` linking.
+- `MSVC_RUNTIME_LINKAGE`: Use the previously generated `S_MSVC_RUNTIME_LINKAGE` if using MSVC.
 
 **Example:**
 
@@ -82,11 +82,12 @@ S_generate_vcpkg_triplet(
 
 - `<OUTPUT_VAR>`: Variable to hold the path to the toolchain file.
 
+**Note:** This only provides the path inside the output variable, be sure to `include()` the output variable **AFTER** `project()`.
+
 **Example:**
 
 ```cmake
 S_detect_vcpkg_toolchain(VCPKG_TOOLCHAIN_FILE)
-include(${VCPKG_TOOLCHAIN_FILE})
 ```
 
 ---
@@ -113,13 +114,16 @@ S_set_runtime_linkage_options(
 
 ---
 
-### `S_set_release_optimizations(<TARGET_ARCH> <ARCH_OPTION>)`
+### `S_set_release_optimizations([MSVC_TARGET_ARCH <arch>] [ENABLE_AGGRESSIVE_OPTS] [EXTRA_COMPILE_OPTS <options>] [EXTRA_LINK_OPTS <options>])`
 
-**Purpose:** Configures compiler optimizations for release builds.
+**Purpose:** Configures compiler optimizations for release builds. Remove or modify parameters if it causes problems.
 
 **Parameters:**
 
-- `<TARGET_ARCH>`: Optional, MSVC target architecture for the /arch:\<TARGET_ARCH\> optimization.
+- `MSVC_TARGET_ARCH`: Optional, MSVC target architecture for the `/arch:<arch>` optimization. Defaults to `AVX2` when omitted.
+- `ENABLE_AGGRESSIVE_OPTS`: Optional, enables aggressive optimizations (e.g. `/fp:fast` and `/GS-` on MSVC, `-Ofast` on GCC/Clang).
+- `EXTRA_COMPILE_OPTS`: Optional, extra compile options appended to the optimization flags.
+- `EXTRA_LINK_OPTS`: Optional, extra link options appended to the link-time optimization flags.
 
 **Example:**
 
@@ -147,7 +151,7 @@ S_set_windows_subsystem(MyProject)
 
 ---
 
-### `S_add_copy_target(TARGET_NAME <name> DESTINATION <path> TYPE <FILES|DIRECTORY> [SOURCE <source_path>] GLOB_PATTERNS <patterns> MARK_AS_BYPRODUCTS ON)`
+### `S_add_copy_target(TARGET_NAME <name> DESTINATION <path> TYPE <FILES|DIRECTORY> [SOURCE <source_path>] [GLOB_PATTERNS <patterns>] [MARK_AS_BYPRODUCTS ON])`
 
 **Purpose:** Creates a custom copy target for assets or shared libraries.
 
@@ -157,7 +161,7 @@ S_set_windows_subsystem(MyProject)
 - `DESTINATION`: Destination directory.
 - `TYPE`: Either `FILES` or `DIRECTORY`. `FILES` will copy all files from the `GLOB_PATTERNS` directly to the `DESTINATION` directory, `DIRECTORY` will copy the directory itself from the `SOURCE` to the `DESTINATION` directory.
 - `SOURCE`: Source directory (required for `DIRECTORY` type).
-- `GLOB_PATTERNS`: Glob patterns for matching files (used with `FILES` type).
+- `GLOB_PATTERNS`: Glob patterns for matching files (required for `FILES` type, ignored for `DIRECTORY`).
 - `MARK_AS_BYPRODUCTS`: Optional, marks files as `BYPRODUCTS` for them to be deleted when you clean.
 
 **Example (copy DLLs):**
