@@ -192,4 +192,4 @@ S_add_copy_target(
 
 ## License
 
-S-Make is provided as-is under the fact that you can do anything you want with it, who knew avoiding CMake torture could be free, as in freedom.
+S-Make is provided as-is under the fact that you can do anything you want with it, who knew avoiding CMake torture could be free, as in freedom...
