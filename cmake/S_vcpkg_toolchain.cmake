@@ -27,7 +27,16 @@ function(S_generate_vcpkg_triplet OUTPUT_VARIABLE TARGET)
     if(NOT PARSE_ARG_LINK_TYPE)
         message(FATAL_ERROR "LINK_TYPE must be provided (static or dynamic)")
     endif()
+
     string(TOLOWER "${PARSE_ARG_LINK_TYPE}" LINK_TYPE)
+    set(MSVC_RUNTIME_LINKAGE "${PARSE_ARG_MSVC_RUNTIME_LINKAGE}")
+
+    if(NOT LINK_TYPE STREQUAL "static" AND NOT LINK_TYPE STREQUAL "dynamic")
+        message(FATAL_ERROR
+                "Invalid LINK_TYPE: '${PARSE_ARG_LINK_TYPE}'. "
+                "LINK_TYPE must be either 'static' or 'dynamic' (case-insensitive)."
+        )
+    endif()
 
     # Construct triplet
     if(MSVC AND OS STREQUAL "windows")
