@@ -135,7 +135,7 @@ S_set_release_optimizations(MSVC_TARGET_ARCH "AVX512")
 
 ### `S_set_windows_subsystem(<PROJECT_NAME>)`
 
-**Purpose:** Configures the Windows subsystem for the target to allow usage of `WinMain` and prevent a terminal window from appearing with a GUI application.
+**Purpose:** Configures the Windows subsystem for the target to allow usage of `WinMain` and prevent a terminal window from appearing with a GUI application. Has no effect on Linux and macOS, thus you don't need to add an `if` statement to check if you are on Windows in order to decide whether to use it or not.
 
 **Parameters:**
 
