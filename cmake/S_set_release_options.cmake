@@ -54,7 +54,7 @@ function(S_set_release_optimizations)
             set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} ${LINKER_OPTS}" PARENT_SCOPE)
             set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} ${LINKER_OPTS}" PARENT_SCOPE)
 
-        elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
             # GCC/Clang flags
             message(STATUS "Configuring GCC/Clang release optimizations...")
 
