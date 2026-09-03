@@ -54,6 +54,13 @@ function(S_generate_vcpkg_triplet OUTPUT_VARIABLE TARGET)
         else()
             message(FATAL_ERROR "Invalid LINK_TYPE: ${LINK_TYPE}")
         endif()
+    elseif(NOT MSVC AND OS STREQUAL "windows")
+        # Other compilers on Windows
+        if(LINK_TYPE STREQUAL "dynamic")
+            set(TRIPLET "${ARCH}-${OS}")
+        else()
+            set(TRIPLET "${ARCH}-${OS}-static")
+        endif()
     else()
         # Other OSes
         if(LINK_TYPE STREQUAL "dynamic")

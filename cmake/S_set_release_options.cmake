@@ -100,8 +100,12 @@ endfunction()
 
 function(S_set_windows_subsystem target_name)
     if(WIN32)
-        set_target_properties(${target_name} PROPERTIES
-                LINK_FLAGS "/SUBSYSTEM:WINDOWS"
-        )
+        if(MSVC)
+            set_target_properties(${target_name} PROPERTIES
+                    LINK_FLAGS "/SUBSYSTEM:WINDOWS"
+            )
+        else()
+            target_link_options(${target_name} PRIVATE -mwindows)
+        endif()
     endif()
 endfunction()
